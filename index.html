@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Farmacia Similares - Citas</title>
+
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@3.4.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      .confirmacion-doctor {
+        margin: 1rem 0;
+        padding: 0.5rem;
+        background-color: #e0fff3;
+        border-left: 4px solid #12ac8e;
+        border-radius: 5px;
+        font-size: 0.9rem;
+        color: #1a725d;
+      }
+
+      .ubicacion-aceptada {
+        margin: 1rem 0;
+        padding: 0.5rem;
+        background-color: #e0f7ff;
+        border-left: 4px solid #007acc;
+        border-radius: 5px;
+        font-size: 0.9rem;
+        color: #005b94;
+      }
+
+      .carousel-container {
+        overflow-x: auto;
+        display: flex;
+        gap: 1rem;
+        padding: 1rem 0;
+        scroll-snap-type: x mandatory;
+      }
+
+      .farmacia-card {
+        flex: 0 0 80%;
+        scroll-snap-align: center;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 1rem;
+        background: #fff;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        min-width: 250px;
+        cursor: pointer;
+      }
+
+      .farmacia-card.selected {
+        border-color: #12ac8e;
+        background-color: #e8fff8;
+        box-shadow: 0 0 0 2px #12ac8e;
+      }
+
+      .farmacia-card h4 {
+        margin-bottom: 0.25rem;
+        color: #333;
+      }
+
+      .farmacia-card p {
+        margin: 0.25rem 0;
+        font-size: 0.9rem;
+        color: #666;
+      }
+
+      .distancia {
+        display: inline-block;
+        background: #eaeaea;
+        padding: 0.2rem 0.6rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        color: #444;
+      }
+
+      .farmacia-card a {
+        display: inline-block;
+        margin-top: 0.5rem;
+        font-size: 0.85rem;
+        color: #12ac8e;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <nav class="section_container nav_container">
+        <div class="nav__logo">Farmacia<span>Similares</span></div>
+        <ul class="nav__links">
+          <li class="link"><a href="#home">Inicio</a></li>
+          <li class="link"><a href="#citas">Citas</a></li>
+        </ul>
+      </nav>
+      <div class="section_container header_container" id="home">
+        <div class="header__content">
+          <h1>Agenda tu Cita en Similares</h1>
+          <p>Selecciona médico y sucursal cercana usando tu ubicación.</p>
+          <a href="#citas" class="btn">Ir a Citas</a>
+        </div>
+      </div>
+    </header>
+
+    <section class="section__container" id="citas">
+      <h2 class="section__header">Reservar Cita</h2>
+      <form class="header__form" id="form-cita">
+        <h4>Datos de la Cita</h4>
+
+        <input type="text" placeholder="Nombre completo" required />
+        <input type="tel" placeholder="Teléfono (para SMS)" required />
+
+        <label>Fecha:</label>
+        <input type="date" required />
+
+        <label>Hora:</label>
+        <input type="time" required />
+
+        <label>Médico Disponible:</label>
+        <select required id="doctor">
+          <option value="">-- Selecciona --</option>
+          <option value="Dr. Simi A">Dr. Simi A</option>
+          <option value="Dra. Pérez">Dra. Pérez</option>
+          <option value="Dr. López">Dr. López</option>
+        </select>
+
+        <div id="confirmacion-doctor" class="confirmacion-doctor" style="display: none;">
+          <p>Disponible para: <span id="doctor-nombre"></span> a las <span id="hora-cita"></span></p>
+        </div>
+
+        <div id="ubicacion-msg" class="ubicacion-aceptada" style="display: none;">
+          ✅ Ubicación aceptada. Selecciona tu sucursal más cercana.
+        </div>
+
+        <label>Elige una sucursal cercana:</label>
+        <div class="carousel-container" id="sucursales-carousel">
+          <!-- JS insertará las tarjetas aquí -->
+        </div>
+
+        <button type="submit" class="btn form__btn">Confirmar cita</button>
+      </form>
+    </section>
+
+    <footer class="footer">
+      <div class="section_container footer_container">
+        <div class="footer__col">
+          <h3>Farmacia<span>Similares</span></h3>
+          <p>Tu salud primero. Agenda tu consulta desde cualquier lugar.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      const form = document.getElementById("form-cita");
+      const carousel = document.getElementById("sucursales-carousel");
+      const sucursales = [
+        {
+          nombre: "Farmacia Similares Av. Reforma",
+          direccion: "Av. Reforma 789, Mexicali",
+          coords: [32.6515, -115.469],
+          maps: "https://www.google.com/maps?q=Av.+Reforma+789,+Mexicali"
+        },
+        {
+          nombre: "Farmacia Similares Blvd. Juárez",
+          direccion: "Blvd. Juárez 1150, Mexicali",
+          coords: [32.6548, -115.4627],
+          maps: "https://www.google.com/maps?q=Blvd.+Juárez+1150,+Mexicali"
+        },
+        {
+          nombre: "Farmacia Similares Calle Morelos",
+          direccion: "Calle Morelos 202, Mexicali",
+          coords: [32.662, -115.4705],
+          maps: "https://www.google.com/maps?q=Calle+Morelos+202,+Mexicali"
+        }
+      ];
+
+      function calcularDistanciaKm(lat1, lon1, lat2, lon2) {
+        const R = 6371;
+        const dLat = ((lat2 - lat1) * Math.PI) / 180;
+        const dLon = ((lon2 - lon1) * Math.PI) / 180;
+        const a =
+          Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+          Math.cos((lat1 * Math.PI) / 180) *
+            Math.cos((lat2 * Math.PI) / 180) *
+            Math.sin(dLon / 2) *
+            Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return (R * c).toFixed(2);
+      }
+
+      function renderSucursales(userLat, userLng) {
+        carousel.innerHTML = "";
+        sucursales.forEach((suc) => {
+          const distancia = calcularDistanciaKm(
+            userLat,
+            userLng,
+            suc.coords[0],
+            suc.coords[1]
+          );
+          const card = document.createElement("div");
+          card.className = "farmacia-card";
+          card.innerHTML = `
+            <h4>${suc.nombre}</h4>
+            <p>${suc.direccion}</p>
+            <span class="distancia">${distancia} km</span><br/>
+            <a href="${suc.maps}" target="_blank">Ver en Mapa</a>
+          `;
+          card.addEventListener("click", () => seleccionarSucursal(card));
+          carousel.appendChild(card);
+        });
+      }
+
+      function seleccionarSucursal(card) {
+        const cards = document.querySelectorAll(".farmacia-card");
+        cards.forEach(c => c.classList.remove("selected"));
+        card.classList.add("selected");
+      }
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            renderSucursales(lat, lng);
+            document.getElementById("ubicacion-msg").style.display = "block";
+          },
+          (err) => {
+            alert("No se pudo obtener tu ubicación. Se usará distancia aproximada.");
+            renderSucursales(32.6633, -115.4671);
+          }
+        );
+      } else {
+        renderSucursales(32.6633, -115.4671);
+      }
+
+      document.getElementById("doctor").addEventListener("change", actualizarConfirmacion);
+      document.querySelector('input[type="time"]').addEventListener("change", actualizarConfirmacion);
+
+      function actualizarConfirmacion() {
+        const doctor = document.getElementById("doctor").value;
+        const hora = document.querySelector('input[type="time"]').value;
+        if (doctor && hora) {
+          document.getElementById("doctor-nombre").textContent = doctor;
+          document.getElementById("hora-cita").textContent = hora;
+          document.getElementById("confirmacion-doctor").style.display = "block";
+        }
+      }
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        alert("¡Cita asignada con éxito!");
+        form.reset();
+        document.getElementById("confirmacion-doctor").style.display = "none";
+        const cards = document.querySelectorAll(".farmacia-card");
+        cards.forEach(c => c.classList.remove("selected"));
+      });
+    </script>
+  </body>
+</html>
